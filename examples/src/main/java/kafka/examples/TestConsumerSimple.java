@@ -35,14 +35,13 @@ public class TestConsumerSimple {
 	public static void main(String args[]) {
 
 		TestConsumerSimple example = new TestConsumerSimple();
-		long maxReads = Long.parseLong(args[0]); //max nr of messages to read
-		String topic = args[1];
-		int partition = Integer.parseInt(args[2]);
+		String topic = args[0];
+		int partition = Integer.parseInt(args[1]);
 		List<String> seeds = new ArrayList<String>();
-		seeds.add(args[3]);
-		int port = Integer.parseInt(args[4]);
+		seeds.add(args[2]);
+		int port = Integer.parseInt(args[3]);
 		try {
-			example.run(maxReads, topic, partition, seeds, port);
+			example.run(topic, partition, seeds, port);
 		} catch (Exception e) {
 			System.out.println("Oops: " + e);
 			e.printStackTrace();
@@ -55,7 +54,7 @@ public class TestConsumerSimple {
 		m_replicaBrokers = new ArrayList<String>();
 	}
 	
-	public void run(long a_maxReads, String a_topic, int a_partition, List<String> a_seedBrokers, int a_port) throws Exception {
+	public void run(String a_topic, int a_partition, List<String> a_seedBrokers, int a_port) throws Exception {
 
 		//find the metadata about the topic and partition we are interested in
 		PartitionMetadata metadata = findLeader(a_seedBrokers, a_port, a_topic, a_partition);
@@ -70,15 +69,14 @@ public class TestConsumerSimple {
 		long readOffset = getLastOffset(consumer, a_topic, a_partition, kafka.api.OffsetRequest.EarliestTime(), clientName);
 		int numErrors = 0;
 
-		while (a_maxReads > 0) {
+		while (true) {
 			
 			if (consumer == null) {
 				consumer = new SimpleConsumer(leadBroker, a_port, 100000, 64 * 1024, clientName);
 			}
-
 			FetchRequest req = new FetchRequestBuilder().clientId(clientName).addFetch(a_topic, a_partition, readOffset, 1000000).build();
 			FetchResponse fetchResponse = consumer.fetch(req);
-
+			
 			//error handling
 			if (fetchResponse.hasError()) {
 				numErrors++;
@@ -97,6 +95,7 @@ public class TestConsumerSimple {
 				leadBroker = findNewLeader(leadBroker, a_topic, a_partition, a_port);
 				continue;
 			}
+			
 
 			numErrors = 0;
 			long numRead = 0;
@@ -104,7 +103,7 @@ public class TestConsumerSimple {
 			//messageSet not iterable, thus use an iterator
 			ByteBufferMessageSet msgSet = fetchResponse.messageSet(a_topic, a_partition);
 			Iterator<MessageAndOffset> it = msgSet.iterator();
-			
+
 			while (it.hasNext()) {
 				MessageAndOffset messageAndOffset = it.next();
 				long currentOffset = messageAndOffset.offset();
@@ -118,7 +117,11 @@ public class TestConsumerSimple {
 				payload.get(bytes);
 				System.out.println(String.valueOf(messageAndOffset.offset()) + ": " + new String(bytes, "UTF-8"));
 				numRead++;
-				a_maxReads--;
+			}
+			
+			if (!it.hasNext()) {
+				System.out.println("No more messages!");
+				break;
 			}
 
 			if (numRead == 0) {
