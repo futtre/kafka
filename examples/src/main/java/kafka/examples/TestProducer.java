@@ -86,21 +86,15 @@ package kafka.examples;
 
 import java.util.Date;
 import java.util.Properties;
-import java.util.Random;
 
 import kafka.javaapi.producer.Producer;
 import kafka.producer.KeyedMessage;
 import kafka.producer.ProducerConfig;
-import kafka.admin.AdminUtils;
-import kafka.utils.ZkUtils;
-
-import org.I0Itec.zkclient.ZkClient;
 
 public class TestProducer {
 	
 	public static void main(String[] args) {
 		
-		Random rnd = new Random();
 		Properties props = new Properties();
 		props.put("metadata.broker.list", "localhost:9092,localhost:9093");
 		props.put("serializer.class", "kafka.serializer.StringEncoder");
@@ -108,26 +102,15 @@ public class TestProducer {
 		ProducerConfig producerConfig = new ProducerConfig(props);
 		Producer<Integer, String> producer = new Producer<Integer, String>(producerConfig);
 		
-		//create zkClient and topic
-		String topic = "tralala";
 
-		//ZKStringSerializer$.MODULE$.toString();
-
-		 
-//		ZkClient zkClient = new ZkClient("localhost:2181", 10000, 10000, ZKStringSerializer$.MODULE$);
-		ZkClient zkClient = new ZkClient("localhost:2181", 10000, 10000);
-		AdminUtils.createTopic(zkClient, topic, 5, 3, new Properties());
-
-		for (int i = 0; i < 5; i++) { 
-			
+		int events = 50;
+		for (int i = 0; i < events; i++) { 
             long runtime = new Date().getTime();  
-            String key = "" + rnd.nextInt(255);
-            String message = runtime + "www.twitter.com" + key; 
-            KeyedMessage<Integer, String> data = new KeyedMessage<Integer, String>(topic, message);
+            String message = runtime + "www.twitter.com"; 
+            KeyedMessage<Integer, String> data = new KeyedMessage<Integer, String>(message, message);
             producer.send(data);
      }
 		producer.close();
-		zkClient.close();
 	}
 }
 
