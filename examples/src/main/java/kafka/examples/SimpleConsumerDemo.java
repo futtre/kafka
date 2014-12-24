@@ -23,22 +23,31 @@ import kafka.javaapi.FetchResponse;
 import java.io.UnsupportedEncodingException;
 import java.nio.ByteBuffer;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
+
 import kafka.javaapi.consumer.SimpleConsumer;
 import kafka.javaapi.message.ByteBufferMessageSet;
 import kafka.message.MessageAndOffset;
+
 import java.util.HashMap;
 import java.util.Map;
 
 public class SimpleConsumerDemo {
     
   private static void printMessages(ByteBufferMessageSet messageSet) throws UnsupportedEncodingException {
-    for(MessageAndOffset messageAndOffset: messageSet) {
-      ByteBuffer payload = messageAndOffset.message().payload();
-      byte[] bytes = new byte[payload.limit()];
-      payload.get(bytes);
-      System.out.println(new String(bytes, "UTF-8"));
-    }
+	  
+	
+	Iterator<MessageAndOffset> it = messageSet.iterator();  
+	
+	while (it.hasNext()) {
+		
+		MessageAndOffset message = it.next();
+		ByteBuffer payload = message.message().payload();
+		byte[] bytes = new byte[payload.limit()];
+		payload.get(bytes);
+		System.out.println(new String(bytes, "UTF-8"));
+	}
   }
 
   private static void generateData() {
@@ -71,9 +80,24 @@ public class SimpleConsumerDemo {
       printMessages((ByteBufferMessageSet) fetchResponse.messageSet(KafkaProperties.topic2, 0));
 
     System.out.println("Testing single multi-fetch");
-    Map<String, List<Integer>> topicMap = new HashMap<String, List<Integer>>() {{
-        put(KafkaProperties.topic2, new ArrayList<Integer>(){{ add(0); }});
-        put(KafkaProperties.topic3, new ArrayList<Integer>(){{ add(0); }});
+    Map<String, List<Integer>> topicMap = new HashMap<String, List<Integer>>() {/**
+		 * 
+		 */
+		private static final long serialVersionUID = -3581824843396606443L;
+
+	{
+        put(KafkaProperties.topic2, new ArrayList<Integer>(){/**
+			 * 
+			 */
+			private static final long serialVersionUID = 1708419466649417997L;
+
+		{ add(0); }});
+        put(KafkaProperties.topic3, new ArrayList<Integer>(){/**
+			 * 
+			 */
+			private static final long serialVersionUID = 6983099853989861972L;
+
+		{ add(0); }});
     }};
     req = new FetchRequestBuilder()
             .clientId(KafkaProperties.clientId)

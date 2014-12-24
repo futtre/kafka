@@ -334,6 +334,8 @@ project(':examples') {
 
   dependencies {
     compile project(':core')
+    compile  'com.twitter:hbc-core:2.2.0'
+     compile  'com.twitter:hbc-twitter4j:2.2.0'
   }
 
 }
