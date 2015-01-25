@@ -37,7 +37,7 @@ public class TestTwitterProducer {
 		props.put("metadata.broker.list", "localhost:9092,localhost:9093");
 		props.put("serializer.class", "kafka.serializer.StringEncoder");
 		props.put("request.required.acks", "1");
-		
+	
 		TwitterProducer twitterProducer = new TwitterProducer(props);
 		
 		try {

@@ -35,8 +35,9 @@ public class TestTwitterConsumer {
 		
 		//example topics that were published to Kafka cluster
 		List<String> topics = new ArrayList<String>();
-		topics.add("twitterapi");
-		topics.add("yolo");
+		topics.add("hbc");
+		topics.add("hosebird");
+		topics.add("kafka");
 		
 		Properties props = new Properties();
 		props.put("zookeeper.connect", "localhost:2181");

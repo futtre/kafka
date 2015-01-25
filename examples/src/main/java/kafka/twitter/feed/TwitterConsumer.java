@@ -97,7 +97,7 @@ public class TwitterConsumer {
 		 * tweets in several hundred topics.
 		 */
 		try {
-			_executor.awaitTermination(120000, TimeUnit.MILLISECONDS);
+			_executor.awaitTermination(60000, TimeUnit.MILLISECONDS);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -128,13 +128,11 @@ public class TwitterConsumer {
 				
 			while (it.hasNext()) {
 				MessageAndMetadata<byte[], byte[]> msg = it.next();
-				String topic = msg.topic();
 				byte[] message = msg.message();
 	            String messageString = new String(message, Charset.forName("UTF-8"));
 
-				System.out.println("Topic: " + topic);
-				System.out.println("Message: " + messageString);
-				
+				System.out.println(messageString);
+							
 			}
 
 			System.out.println("TwitterConsumerTask done.");

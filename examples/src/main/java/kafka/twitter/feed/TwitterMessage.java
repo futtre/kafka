@@ -53,7 +53,6 @@ public class TwitterMessage {
 				
 				String[] hashtagElems = hashtags.getString(i).split(":")[1].split(",");
 				String hashtag = hashtagElems[0].substring(1, hashtagElems[0].length() - 1);
-				System.out.println("hashTag: " + hashtag);
 				resultHashtags.add(hashtag);
 			}
 		} catch (JSONException e) {
@@ -87,6 +86,38 @@ public class TwitterMessage {
 		}
 
 		return username;
+	}
+	
+	public String getCreatedDate() {
+		
+		String dateStr = new String();
+		
+		try {
+			dateStr = _tweetJsonObject.getString("created_at");
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+	
+		return dateStr; 
+		
+	}
+	
+	@Override
+	public String toString() {
+		
+		StringBuilder str = new StringBuilder("TwitterMessage {");
+		
+		str.append(getCreatedDate());		
+		str.append("\thashtag(s): ");
+		for (String hashtag : getHashtags()) {
+			str.append(hashtag).append(" ");			
+		}
+		str.append("\tuser: ").append(getUser());		
+		str.append("\ttext: \"").append(getText()).append("\"");
+			
+		str.append("}");
+
+		return str.toString();
 	}
 	
 	//TODO
